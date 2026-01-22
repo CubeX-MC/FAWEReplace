@@ -6,6 +6,7 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.cubexmc.fawereplace.commands.FaweReplaceCommand;
 import org.cubexmc.fawereplace.commands.FaweReplaceTabCompleter;
+import org.cubexmc.fawereplace.metrics.Metrics;
 import org.cubexmc.fawereplace.tasks.CleaningTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -30,6 +31,10 @@ public final class FAWEReplace extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        // 初始化统计
+        Metrics metrics = new Metrics(this, 28977);
+
         // 保存默认配置
         saveDefaultConfig();
 
@@ -111,11 +116,11 @@ public final class FAWEReplace extends JavaPlugin {
      */
     public boolean reloadConfiguration() {
         reloadConfig();
-        
+
         // 重新加载语言
         String language = getConfig().getString("language", "zh_CN");
         languageManager.reload(language);
-        
+
         return loadConfiguration();
     }
 
@@ -224,10 +229,11 @@ public final class FAWEReplace extends JavaPlugin {
             cleaningTask.setRegionSize(regionX, regionY, regionZ);
 
             getLogger().info(String.format("已加载配置: 世界=%s, 区域=%dx%dx%d, 范围=(%d,%d,%d)->(%d,%d,%d), 跳过未生成区块=%s",
-                    worldName, regionX, regionY, regionZ, startX, startY, startZ, endX, endY, endZ, 
+                    worldName, regionX, regionY, regionZ, startX, startY, startZ, endX, endY, endZ,
                     skipUngeneratedChunks ? "开启" : "关闭"));
             getLogger().info(String.format("内存保护: %s | 性能限制: 批次延迟=%dms, 区块延迟=%dms, GC频率=%d区块",
-                    memoryProtectionEnabled ? "已启用" : "已禁用", delayBetweenBatchesMs, delayBetweenChunksMs, gcEveryChunks));
+                    memoryProtectionEnabled ? "已启用" : "已禁用", delayBetweenBatchesMs, delayBetweenChunksMs,
+                    gcEveryChunks));
 
             return true;
         } catch (Exception e) {
@@ -262,7 +268,8 @@ public final class FAWEReplace extends JavaPlugin {
                     targetName = tv == null ? null : tv.toString();
                 }
 
-                if (originName == null || targetName == null) continue;
+                if (originName == null || targetName == null)
+                    continue;
 
                 Material om = Material.getMaterial(originName.toUpperCase(Locale.ROOT));
                 Material tm = Material.getMaterial(targetName.toUpperCase(Locale.ROOT));
@@ -273,7 +280,8 @@ public final class FAWEReplace extends JavaPlugin {
 
                 BlockType ob = BlockTypes.get(om.name().toLowerCase(Locale.ROOT));
                 BlockType tb = BlockTypes.get(tm.name().toLowerCase(Locale.ROOT));
-                if (ob == null || tb == null) continue;
+                if (ob == null || tb == null)
+                    continue;
 
                 com.sk89q.worldedit.world.block.BlockState targetState = tb.getDefaultState();
                 grouped.computeIfAbsent(targetState, k -> new ArrayList<>()).add(ob);
@@ -300,7 +308,8 @@ public final class FAWEReplace extends JavaPlugin {
         List<String> ets = getConfig().getStringList("entities.types");
         if (ets != null) {
             for (String s : ets) {
-                if (s == null) continue;
+                if (s == null)
+                    continue;
                 String key = s.trim().toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_');
                 try {
                     EntityType et = EntityType.valueOf(key);
