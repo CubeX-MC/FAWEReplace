@@ -24,19 +24,7 @@
 #   - 16GB+ RAM: 12-16
 parallel: 6
 
-world: "world"
-
-region:
-  x: 512
-  z: 512
-
-target:
-  start:
-    x: -80000
-    z: -80000
-  end:
-    x: 80000
-    z: 80000
+# world 和 target 设置已移至 rules.yml
 
 confirm: false
 
@@ -87,72 +75,6 @@ resume:
   file: "progress.yml"
   # 减少保存频率以提升性能
   save-every: 100
-
-# 方块替换规则
-blocks:
-  - origin: SHULKER_BOX
-    target: AIR
-  - origin: YELLOW_SHULKER_BOX
-    target: AIR
-  - origin: GREEN_SHULKER_BOX
-    target: AIR
-  - origin: PURPLE_SHULKER_BOX
-    target: AIR
-  - origin: DISPENSER
-    target: AIR
-  - origin: ORANGE_SHULKER_BOX
-    target: AIR
-  - origin: FURNACE
-    target: AIR
-  - origin: BLACK_SHULKER_BOX
-    target: AIR
-  - origin: LIME_SHULKER_BOX
-    target: AIR
-  - origin: HOPPER
-    target: AIR
-  - origin: GRAY_SHULKER_BOX
-    target: AIR
-  - origin: RED_SHULKER_BOX
-    target: AIR
-  - origin: LIGHT_BLUE_SHULKER_BOX
-    target: AIR
-  - origin: BREWING_STAND
-    target: AIR
-  - origin: BROWN_SHULKER_BOX
-    target: AIR
-  - origin: BARREL
-    target: AIR
-  - origin: CAMPFIRE
-    target: AIR
-  - origin: LIGHT_GRAY_SHULKER_BOX
-    target: AIR
-  - origin: TRAPPED_CHEST
-    target: AIR
-  - origin: DROPPER
-    target: AIR
-  - origin: WHITE_SHULKER_BOX
-    target: AIR
-  - origin: CHEST
-    target: AIR
-  - origin: SOUL_CAMPFIRE
-    target: AIR
-  - origin: BLUE_SHULKER_BOX
-    target: AIR
-  - origin: MAGENTA_SHULKER_BOX
-    target: AIR
-  - origin: PINK_SHULKER_BOX
-    target: AIR
-  - origin: CYAN_SHULKER_BOX
-    target: AIR
-  - origin: BLAST_FURNACE
-    target: AIR
-  - origin: SMOKER
-    target: AIR
-
-# 实体清理（如果不需要可以禁用以提升性能）
-entities:
-  enabled: false
-  types: []
 
 # ===================================
 # 额外的性能提示：

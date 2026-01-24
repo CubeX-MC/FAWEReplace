@@ -23,6 +23,10 @@ help:
   reload: "§e/{label} reload §7- 重载配置文件"
   help: "§e/{label} help §7- 显示此帮助"
   aliases: "§7别名: §e/fawerl, /frl"
+  setregion: "§e/{label} setregion §7- 设置清理区域为选区"
+  addrule: "§e/{label} addrule <原方块> <目标方块> §7- 添加替换规则"
+  removerule: "§e/{label} removerule <原方块> §7- 移除替换规则"
+  rules: "§e/{label} rules §7- 列出当前替换规则"
 
 # 命令用法
 usage: "§e用法: /{label} <start|stop|status|reload|help>"
@@ -45,6 +49,30 @@ start:
   resume_enabled: "§7  断点续传: §a已启用 §7(每 {interval} 个分块保存)"
   resume_disabled: "§7  断点续传: §c未启用"
   total_chunks: "§7  总分块数: §e{total}"
+
+  total_chunks: "§7  总分块数: §e{total}"
+
+# SetRegion 命令
+setregion:
+  no_selection: "§c请先使用 WorldEdit 斧头选择一个区域。"
+  success: "§a已成功设置清理区域！"
+  coords: "§7当前范围: §e({x1}, {y1}, {z1}) §7-> §e({x2}, {y2}, {z2})"
+  saved: "§a配置已保存。"
+
+# Rule 管理命令
+rule:
+  add_usage: "§c用法: /fawereplace addrule <原方块> <目标方块>"
+  remove_usage: "§c用法: /fawereplace removerule <原方块>"
+  invalid_material: "§c无效的方块名称: {material}"
+  invalid_type: "§c无效的方块或实体名称: {type}"
+  entity_target_error: "§c实体只能被移除 (目标必须是 AIR)。"
+  add_success: "§a已添加规则: §e{origin} §7-> §a{target}"
+  remove_success: "§a已移除规则: §e{origin}"
+  remove_failed: "§c未找到针对 §e{origin} §c的规则。"
+  list_header: "§6=== 当前替换规则 ({count}) ==="
+  list_format: "§7- §e{origin} §7-> §a{target}"
+  list_empty: "§e当前没有配置任何替换规则。"
+  save_failed: "§c保存配置失败，请查看控制台。"
 
 # Stop 命令
 stop:
@@ -139,6 +167,38 @@ plugin:
   command_unavailable: "在配置正确加载前，start 命令将不可用。"
   command_registered: "已成功注册命令 '/fawereplace' (别名: /fawerl, /frl)"
   command_register_failed: "注册命令时出错："
+
+# Logger Messages (Hardcoded fix)
+log:
+  replace_complete_one: "替换完成，共处理任务：1"
+  replace_complete_tasks: "替换完成，共处理任务：{count}"
+  all_stopped: "所有清理任务已成功停止。"
+  stop_timeout: "部分清理任务未能在 30 秒内停止。"
+  wait_interrupted: "等待清理任务停止时被中断。"
+  progress_saved_resume: "已保存当前进度，下次启动时可以继续。"
+  stopping_wait: "已请求停止清理任务，正在等待当前区块完成..."
+  memory_wait_interrupted: "内存等待被中断"
+  memory_suggestion: "建议: 1) 增加服务器内存 2) 减少 parallel 参数 3) 调整 memory-protection 设置"
+  worker_stopping: "工作线程检测到停止信号，正在退出..."
+  worker_memory_abort: "工作线程因内存不足而中止"
+  progress_log: "进度: {done}/{total}"
+  max_block_limit: "达到最大方块修改限制: {error}"
+  fixed_tile_entities: "已修复不匹配的方块实体: {count}"
+  resume_world_mismatch: "进度文件世界不匹配，已忽略: {file}"
+  resume_continued: "已从进度文件恢复，继续于第 {current} / {total} 个切片。"
+  resume_delete_failed: "无法删除进度文件: {file}"
+  bukkit_world_failed: "无法获取 Bukkit 世界对象，将处理所有区域（不检查区块生成状态）"
+
+# Chunk Repair Strings
+repair:
+  starting_msg: "§e正在修复区块: §7{count} §e个区块"
+  range_msg: "§7区块范围: §e({x1}, {z1}) §7至 §e({x2}, {z2})"
+  starting_log: "开始修复区块: {count} 个区块"
+  progress_log: "已修复: {done}/{total}"
+  complete_log: "区块修复完成！共修复 {count} 个区块"
+  complete_msg: "§a区块修复完成！共修复 §e{count} §a个区块"
+  restart_msg: "§7请重启服务器以确保更改生效"
+  error_log: "修复区块时出错: {error}"
 
 # 时间格式
 time:

@@ -23,6 +23,10 @@ help:
   reload: "§e/{label} reload §7- Reload configuration"
   help: "§e/{label} help §7- Show this help"
   aliases: "§7Aliases: §e/fawerl, /frl"
+  setregion: "§e/{label} setregion §7- Set cleaning region from selection"
+  addrule: "§e/{label} addrule <origin> <target> §7- Add replacement rule"
+  removerule: "§e/{label} removerule <origin> §7- Remove replacement rule"
+  rules: "§e/{label} rules §7- List current rules"
 
 # Command Usage
 usage: "§eUsage: /{label} <start|stop|status|reload|help>"
@@ -45,6 +49,30 @@ start:
   resume_enabled: "§7  Resume: §aEnabled §7(save every {interval} tiles)"
   resume_disabled: "§7  Resume: §cDisabled"
   total_chunks: "§7  Total Tiles: §e{total}"
+
+  total_chunks: "§7  Total Tiles: §e{total}"
+
+# SetRegion Command
+setregion:
+  no_selection: "§cPlease make a WorldEdit selection first."
+  success: "§aSuccessfully set cleaning region!"
+  coords: "§7New Bounds: §e({x1}, {y1}, {z1}) §7-> §e({x2}, {y2}, {z2})"
+  saved: "§aConfiguration saved."
+
+# Rule Management Commands
+rule:
+  add_usage: "§cUsage: /fawereplace addrule <origin> <target>"
+  remove_usage: "§cUsage: /fawereplace removerule <origin>"
+  invalid_material: "§cInvalid material name: {material}"
+  invalid_type: "§cInvalid block or entity name: {type}"
+  entity_target_error: "§cEntities can only be removed (target must be AIR)."
+  add_success: "§aAdded rule: §e{origin} §7-> §a{target}"
+  remove_success: "§aRemoved rule: §e{origin}"
+  remove_failed: "§cRule for §e{origin} §cnot found."
+  list_header: "§6=== Current Replacement Rules ({count}) ==="
+  list_format: "§7- §e{origin} §7-> §a{target}"
+  list_empty: "§eNo replacement rules configured."
+  save_failed: "§cFailed to save configuration, check console."
 
 # Stop Command
 stop:
@@ -139,6 +167,38 @@ plugin:
   command_unavailable: "The start command will not be available until configuration is properly loaded."
   command_registered: "Successfully registered command '/fawereplace' (aliases: /fawerl, /frl)"
   command_register_failed: "Error registering command:"
+
+# Logger Messages (Hardcoded fix)
+log:
+  replace_complete_one: "Replacement complete, tasks processed: 1"
+  replace_complete_tasks: "Replacement complete, tasks processed: {count}"
+  all_stopped: "All cleaning tasks stopped successfully."
+  stop_timeout: "Some cleaning tasks failed to stop within 30 seconds."
+  wait_interrupted: "Interrupted while waiting for cleaning tasks to stop."
+  progress_saved_resume: "Progress saved, can resume on next start."
+  stopping_wait: "Requested stop, waiting for current chunk to finish..."
+  memory_wait_interrupted: "Memory wait interrupted."
+  memory_suggestion: "Suggestion: 1) Increase server memory 2) Reduce parallel setting 3) Adjust memory-protection settings"
+  worker_stopping: "Worker thread detected stop signal, exiting..."
+  worker_memory_abort: "Worker thread aborted due to low memory"
+  progress_log: "Progress: {done}/{total}"
+  max_block_limit: "Reached max block change limit: {error}"
+  fixed_tile_entities: "Fixed mismatched tile entities: {count}"
+  resume_world_mismatch: "Progress file world mismatch, ignored: {file}"
+  resume_continued: "Resumed from progress file, continue at tile {current} / {total}."
+  resume_delete_failed: "Failed to delete progress file: {file}"
+  bukkit_world_failed: "Failed to get Bukkit world, processing all regions (skipping generation check disabled)"
+
+# Chunk Repair Strings
+repair:
+  starting_msg: "§eRepairing chunks: §7{count} §echunks"
+  range_msg: "§7Chunk range: §e({x1}, {z1}) §7to §e({x2}, {z2})"
+  starting_log: "Starting chunk repair: {count} chunks"
+  progress_log: "Repaired: {done}/{total}"
+  complete_log: "Chunk repair complete! Total repaired: {count}"
+  complete_msg: "§aChunk repair complete! Repaired §e{count} §achunks"
+  restart_msg: "§7Please restart the server to ensure changes take effect"
+  error_log: "Error repairing chunks: {error}"
 
 # Time Format
 time:

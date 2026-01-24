@@ -4,7 +4,7 @@
   <groupId>org.cubexmc</groupId>
   <artifactId>FAWEReplace</artifactId>
   <name>FAWEReplace</name>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <build>
     <resources>
       <resource>

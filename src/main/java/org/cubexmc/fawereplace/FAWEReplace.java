@@ -28,6 +28,8 @@ public final class FAWEReplace extends JavaPlugin {
     private CleaningTask cleaningTask;
     private World world;
     private LanguageManager languageManager;
+    private org.bukkit.configuration.file.YamlConfiguration rulesConfig;
+    private File rulesFile;
 
     @Override
     public void onEnable() {
@@ -37,6 +39,17 @@ public final class FAWEReplace extends JavaPlugin {
 
         // 保存默认配置
         saveDefaultConfig();
+
+        // 加载/创建 rules.yml
+        rulesFile = new File(getDataFolder(), "rules.yml");
+        if (!rulesFile.exists()) {
+            saveResource("rules.yml", false);
+            // 首次创建时，尝试从 config.yml 迁移旧数据
+            rulesConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(rulesFile);
+            migrateDataToRules();
+        } else {
+            rulesConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(rulesFile);
+        }
 
         // 初始化语言管理器
         String language = getConfig().getString("language", "zh_CN");
@@ -139,12 +152,68 @@ public final class FAWEReplace extends JavaPlugin {
     }
 
     /**
+     * 获取 rules 配置
+     */
+    public org.bukkit.configuration.file.YamlConfiguration getRulesConfig() {
+        return rulesConfig;
+    }
+
+    /**
+     * 保存 rules 配置
+     */
+    public void saveRulesConfig() {
+        try {
+            rulesConfig.save(rulesFile);
+        } catch (Exception e) {
+            getLogger().severe("Could not save rules.yml!");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 从 config.yml 迁移数据到 rules.yml
+     */
+    private void migrateDataToRules() {
+        boolean changed = false;
+
+        // 迁移 World
+        if (getConfig().contains("world")) {
+            rulesConfig.set("world", getConfig().getString("world"));
+            changed = true;
+        }
+
+        // 迁移 Target Region
+        if (getConfig().contains("target")) {
+            rulesConfig.set("target", getConfig().getConfigurationSection("target"));
+            changed = true;
+        }
+
+        // 迁移 Blocks
+        if (getConfig().contains("blocks")) {
+            rulesConfig.set("blocks", getConfig().getList("blocks"));
+            changed = true;
+        }
+
+        // 迁移 Entities
+        if (getConfig().contains("entities.types")) {
+            rulesConfig.set("entities", getConfig().getStringList("entities.types"));
+            changed = true;
+        }
+
+        if (changed) {
+            saveRulesConfig();
+            getLogger().info("Successfully migrated dynamic data (world, target, blocks) to rules.yml");
+            getLogger().info("Note: The data in config.yml is still there but will be ignored for these fields.");
+        }
+    }
+
+    /**
      * 加载配置并初始化清理任务
      */
     private boolean loadConfiguration() {
         try {
-            // 读取世界
-            String worldName = getConfig().getString("world", "world");
+            // 读取世界 (优先从 rules.yml 读取)
+            String worldName = rulesConfig.getString("world", getConfig().getString("world", "world"));
             world = getWorldFromFaweOrBukkit(worldName);
             if (world == null) {
                 getLogger().severe(languageManager.getMessage("error.world_not_found", "world", worldName));
@@ -160,15 +229,18 @@ public final class FAWEReplace extends JavaPlugin {
             boolean regionYFullSpan = !getConfig().contains("region.y");
             int regionY = regionYFullSpan ? 0 : getConfig().getInt("region.y", 256);
 
-            // 读取目标范围
-            int startX = getConfig().getInt("target.start.x", 0);
-            int startZ = getConfig().getInt("target.start.z", 0);
-            int endX = getConfig().getInt("target.end.x", 1000);
-            int endZ = getConfig().getInt("target.end.z", 1000);
+            // 读取目标范围 (优先从 rules.yml 读取)
+            int startX = rulesConfig.getInt("target.start.x", getConfig().getInt("target.start.x", 0));
+            int startZ = rulesConfig.getInt("target.start.z", getConfig().getInt("target.start.z", 0));
+            int endX = rulesConfig.getInt("target.end.x", getConfig().getInt("target.end.x", 1000));
+            int endZ = rulesConfig.getInt("target.end.z", getConfig().getInt("target.end.z", 1000));
 
             // Y 范围处理
             int startY, endY;
-            if (!getConfig().contains("target.start.y") || !getConfig().contains("target.end.y")) {
+            boolean hasRulesY = rulesConfig.contains("target.start.y") && rulesConfig.contains("target.end.y");
+            boolean hasConfigY = getConfig().contains("target.start.y") && getConfig().contains("target.end.y");
+
+            if (!hasRulesY && !hasConfigY) {
                 org.bukkit.World bw = BukkitAdapter.adapt(world);
                 if (bw != null) {
                     startY = bw.getMinHeight();
@@ -177,6 +249,9 @@ public final class FAWEReplace extends JavaPlugin {
                     startY = -64;
                     endY = 319;
                 }
+            } else if (hasRulesY) {
+                startY = rulesConfig.getInt("target.start.y");
+                endY = rulesConfig.getInt("target.end.y");
             } else {
                 startY = getConfig().getInt("target.start.y");
                 endY = getConfig().getInt("target.end.y");
@@ -249,7 +324,12 @@ public final class FAWEReplace extends JavaPlugin {
     private Map<com.sk89q.worldedit.world.block.BlockState, BlockType[]> buildBlockRulesFromConfig() {
         Map<com.sk89q.worldedit.world.block.BlockState, List<BlockType>> grouped = new HashMap<>();
 
-        List<?> list = getConfig().getList("blocks");
+        // 优先读取 rules.yml
+        List<?> list = rulesConfig.getList("blocks");
+        if (list == null || list.isEmpty()) {
+            list = getConfig().getList("blocks");
+        }
+
         if (list != null) {
             for (Object o : list) {
                 String originName = null;
@@ -305,7 +385,13 @@ public final class FAWEReplace extends JavaPlugin {
      */
     private Set<EntityType> buildEntityTypesFromConfig() {
         Set<EntityType> types = new HashSet<>();
-        List<String> ets = getConfig().getStringList("entities.types");
+
+        // 优先读取 rules.yml
+        List<String> ets = rulesConfig.getStringList("entities");
+        if (ets == null || ets.isEmpty()) {
+            ets = getConfig().getStringList("entities.types");
+        }
+
         if (ets != null) {
             for (String s : ets) {
                 if (s == null)
