@@ -16,16 +16,16 @@ import java.util.logging.Logger;
  * 负责加载和管理插件的多语言文本
  */
 public class LanguageManager {
-    
+
     private final JavaPlugin plugin;
     private final Logger logger;
     private final Map<String, String> messages = new HashMap<>();
     private String currentLanguage;
-    
+
     /**
      * 构造函数
      * 
-     * @param plugin 插件实例
+     * @param plugin   插件实例
      * @param language 语言代码 (如 zh_CN, en_US)
      */
     public LanguageManager(JavaPlugin plugin, String language) {
@@ -34,7 +34,7 @@ public class LanguageManager {
         this.currentLanguage = language;
         loadLanguage(language);
     }
-    
+
     /**
      * 加载指定语言文件
      * 
@@ -43,14 +43,14 @@ public class LanguageManager {
     public void loadLanguage(String language) {
         messages.clear();
         this.currentLanguage = language;
-        
+
         File langFile = new File(plugin.getDataFolder(), "lang/" + language + ".yml");
-        
+
         // 如果外部文件不存在，从资源中复制
         if (!langFile.exists()) {
             plugin.saveResource("lang/" + language + ".yml", false);
         }
-        
+
         // 加载语言文件
         try {
             YamlConfiguration config;
@@ -71,21 +71,22 @@ public class LanguageManager {
                     return;
                 }
             }
-            
+
             // 加载所有消息
             for (String key : config.getKeys(true)) {
                 if (config.isString(key)) {
                     messages.put(key, config.getString(key));
                 }
             }
-            
-            logger.info("Loaded language: " + language + " (" + messages.size() + " messages)");
+
+            logger.info(
+                    getMessage("log.language_loaded", "language", language, "count", String.valueOf(messages.size())));
         } catch (Exception e) {
             logger.severe("Failed to load language file: " + language + ".yml");
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 获取翻译文本
      * 
@@ -95,38 +96,39 @@ public class LanguageManager {
     public String getMessage(String key) {
         return messages.getOrDefault(key, key);
     }
-    
+
     /**
      * 获取翻译文本并替换占位符
      * 
-     * @param key 消息键
-     * @param replacements 替换内容，格式为 {placeholder1, value1, placeholder2, value2, ...}
+     * @param key          消息键
+     * @param replacements 替换内容，格式为 {placeholder1, value1, placeholder2, value2,
+     *                     ...}
      * @return 翻译并替换后的文本
      */
     public String getMessage(String key, Object... replacements) {
         String message = getMessage(key);
-        
+
         if (replacements.length % 2 != 0) {
-            logger.warning("Invalid replacements array for key: " + key);
+            logger.warning(getMessage("log.invalid_replacements", "key", key));
             return message;
         }
-        
+
         for (int i = 0; i < replacements.length; i += 2) {
             String placeholder = String.valueOf(replacements[i]);
             String value = String.valueOf(replacements[i + 1]);
             message = message.replace("{" + placeholder + "}", value);
         }
-        
+
         return message;
     }
-    
+
     /**
      * 重新加载当前语言
      */
     public void reload() {
         loadLanguage(currentLanguage);
     }
-    
+
     /**
      * 重新加载并切换到新语言
      * 
@@ -135,7 +137,7 @@ public class LanguageManager {
     public void reload(String language) {
         loadLanguage(language);
     }
-    
+
     /**
      * 获取当前语言代码
      * 

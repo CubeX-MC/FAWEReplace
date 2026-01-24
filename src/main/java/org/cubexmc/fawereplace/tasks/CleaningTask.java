@@ -409,17 +409,20 @@ public class CleaningTask {
             if (freePercent >= minFreeMemoryPercent) {
                 // 内存充足，可以继续
                 if (retries > 0) {
-                    logger.info(String.format("内存已恢复到安全水平 (%.1f%% 可用)", freePercent * 100));
+                    logger.info(lang.getMessage("log.memory_recovered", "percent",
+                            String.format("%.1f", freePercent * 100)));
                 }
                 return true;
             }
 
             // 内存不足，警告并等待
             retries++;
-            logger.warning(String.format("内存不足警告！当前可用: %.1f%% (最小要求: %.1f%%) - 暂停 %d 秒 (重试 %d/%s)",
-                    freePercent * 100, minFreeMemoryPercent * 100,
-                    waitOnLowMemoryMs / 1000,
-                    retries, maxMemoryRetries < 0 ? "∞" : String.valueOf(maxMemoryRetries)));
+            logger.warning(lang.getMessage("log.memory_warning",
+                    "free", String.format("%.1f", freePercent * 100),
+                    "min", String.format("%.1f", minFreeMemoryPercent * 100),
+                    "wait", String.valueOf(waitOnLowMemoryMs / 1000),
+                    "retry", String.valueOf(retries),
+                    "max", maxMemoryRetries < 0 ? "∞" : String.valueOf(maxMemoryRetries)));
 
             // 建议垃圾回收
             System.gc();
@@ -439,7 +442,7 @@ public class CleaningTask {
         }
 
         // 达到最大重试次数
-        logger.severe(String.format("内存持续不足，已达到最大重试次数 (%d)。任务将中止以防止崩溃。", maxMemoryRetries));
+        logger.severe(lang.getMessage("log.memory_abort_max_retries", "count", String.valueOf(maxMemoryRetries)));
         logger.severe(lang.getMessage("log.memory_suggestion"));
         running = false;
         return false;
@@ -498,7 +501,7 @@ public class CleaningTask {
             // 定期垃圾回收
             if (gcEveryChunks > 0 && done % gcEveryChunks == 0) {
                 System.gc();
-                logger.fine(String.format("已处理 %d 区块，执行垃圾回收", done));
+                logger.fine(lang.getMessage("log.gc_executed", "count", String.valueOf(done)));
             }
 
             if (done % logEvery == 0 || done == totalTilesInt) {
@@ -564,7 +567,7 @@ public class CleaningTask {
             try {
                 fixMismatchedTileEntitiesSync(startLoc, endLoc);
             } catch (Throwable t) {
-                logger.log(Level.WARNING, "清理残留方块实体时发生异常", t);
+                logger.log(Level.WARNING, lang.getMessage("log.error_cleaning_te"), t);
             }
 
             if (entityCleanupEnabled) {
@@ -578,7 +581,7 @@ public class CleaningTask {
                 try {
                     refreshChunkHeightmaps(startLoc, endLoc);
                 } catch (Throwable t) {
-                    logger.log(Level.WARNING, "刷新区块高度图时发生异常", t);
+                    logger.log(Level.WARNING, lang.getMessage("log.error_refreshing_heightmap"), t);
                 }
             }
 

@@ -1,5 +1,5 @@
 name: FAWEReplace
-version: '1.0.4'
+version: '1.0.5'
 main: org.cubexmc.fawereplace.FAWEReplace
 api-version: '1.20'
 authors: [ cong0707, angushushu ]

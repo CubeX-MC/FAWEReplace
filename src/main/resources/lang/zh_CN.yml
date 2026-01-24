@@ -27,6 +27,10 @@ help:
   addrule: "§e/{label} addrule <原方块> <目标方块> §7- 添加替换规则"
   removerule: "§e/{label} removerule <原方块> §7- 移除替换规则"
   rules: "§e/{label} rules §7- 列出当前替换规则"
+  
+  # 注册命令描述
+  description: "基于 FAWE 的世界清理与方块替换"
+  usage: "/<command> <start|stop|status|reload|help>"
 
 # 命令用法
 usage: "§e用法: /{label} <start|stop|status|reload|help>"
@@ -166,7 +170,7 @@ plugin:
   config_invalid: "配置加载失败！请修复配置后使用 /fawereplace reload 重新加载。"
   command_unavailable: "在配置正确加载前，start 命令将不可用。"
   command_registered: "已成功注册命令 '/fawereplace' (别名: /fawerl, /frl)"
-  command_register_failed: "注册命令时出错："
+  command_register_failed: "注册命令时出错：{error}"
 
 # Logger Messages (Hardcoded fix)
 log:
@@ -187,7 +191,28 @@ log:
   resume_world_mismatch: "进度文件世界不匹配，已忽略: {file}"
   resume_continued: "已从进度文件恢复，继续于第 {current} / {total} 个切片。"
   resume_delete_failed: "无法删除进度文件: {file}"
+  rules_migrated: "成功迁移动态数据 (world, target, blocks) 到 rules.yml"
+  rules_migrated_note: "注意：config.yml 中的数据仍然存在，但在这些字段上将被忽略。"
+  language_loaded: "已加载语言: {language} ({count} 条消息)"
+  language_fallback: "未找到语言文件: {file}，回退到 zh_CN"
   bukkit_world_failed: "无法获取 Bukkit 世界对象，将处理所有区域（不检查区块生成状态）"
+  memory_recovered: "内存已恢复到安全水平 ({percent}% 可用)"
+  memory_warning: "内存不足警告！当前可用: {free}% (最小要求: {min}%) - 暂停 {wait} 秒 (重试 {retry}/{max})"
+  memory_abort_max_retries: "内存持续不足，已达到最大重试次数 ({count})。任务将中止以防止崩溃。"
+  gc_executed: "已处理 {count} 区块，执行垃圾回收"
+  error_cleaning_te: "清理残留方块实体时发生异常"
+  error_refreshing_heightmap: "刷新区块高度图时发生异常"
+  rules_save_failed: "无法保存 rules.yml！"
+  invalid_material_config: "无效的材质: origin={origin}, target={target}"
+  unknown_entity_type: "未知的实体类型: {type}"
+  language_load_failed: "加载语言文件失败: {file}"
+  invalid_replacements: "键 {key} 的替换数组无效"
+  config_loaded_info: "已加载配置: 世界={world}, 区域={rx}x{ry}x{rz}, 范围=({sx},{sy},{sz})->({ex},{ey},{ez}), 跳过未生成区块={skip}"
+  config_performance_info: "内存保护: {memory} | 性能限制: 批次延迟={batch}ms, 区块延迟={chunk}ms, GC频率={gc}区块"
+  enabled: "已启用"
+  disabled: "已禁用"
+  on: "开启"
+  off: "关闭"
 
 # Chunk Repair Strings
 repair:

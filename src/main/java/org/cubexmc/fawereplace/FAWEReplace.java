@@ -104,15 +104,15 @@ public final class FAWEReplace extends JavaPlugin {
                 }
             };
 
-            fawereplaceCmd.setDescription("FAWE-based world cleaning and block replacement");
-            fawereplaceCmd.setUsage("/<command> <start|stop|status|reload|help>");
+            fawereplaceCmd.setDescription(languageManager.getMessage("help.description"));
+            fawereplaceCmd.setUsage(languageManager.getMessage("help.usage"));
             fawereplaceCmd.setPermission("fawereplace.use");
             fawereplaceCmd.setAliases(Arrays.asList("fawerl", "frl"));
 
             this.getServer().getCommandMap().register("fawereplace", fawereplaceCmd);
             getLogger().info(languageManager.getMessage("plugin.command_registered"));
         } catch (Exception e) {
-            getLogger().severe(languageManager.getMessage("plugin.command_register_failed") + " " + e.getMessage());
+            getLogger().severe(languageManager.getMessage("plugin.command_register_failed", "error", e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -165,7 +165,7 @@ public final class FAWEReplace extends JavaPlugin {
         try {
             rulesConfig.save(rulesFile);
         } catch (Exception e) {
-            getLogger().severe("Could not save rules.yml!");
+            getLogger().severe(languageManager.getMessage("log.rules_save_failed"));
             e.printStackTrace();
         }
     }
@@ -202,8 +202,8 @@ public final class FAWEReplace extends JavaPlugin {
 
         if (changed) {
             saveRulesConfig();
-            getLogger().info("Successfully migrated dynamic data (world, target, blocks) to rules.yml");
-            getLogger().info("Note: The data in config.yml is still there but will be ignored for these fields.");
+            getLogger().info(languageManager.getMessage("log.rules_migrated"));
+            getLogger().info(languageManager.getMessage("log.rules_migrated_note"));
         }
     }
 
@@ -303,12 +303,16 @@ public final class FAWEReplace extends JavaPlugin {
             // 设置区域大小
             cleaningTask.setRegionSize(regionX, regionY, regionZ);
 
-            getLogger().info(String.format("已加载配置: 世界=%s, 区域=%dx%dx%d, 范围=(%d,%d,%d)->(%d,%d,%d), 跳过未生成区块=%s",
-                    worldName, regionX, regionY, regionZ, startX, startY, startZ, endX, endY, endZ,
-                    skipUngeneratedChunks ? "开启" : "关闭"));
-            getLogger().info(String.format("内存保护: %s | 性能限制: 批次延迟=%dms, 区块延迟=%dms, GC频率=%d区块",
-                    memoryProtectionEnabled ? "已启用" : "已禁用", delayBetweenBatchesMs, delayBetweenChunksMs,
-                    gcEveryChunks));
+            getLogger().info(languageManager.getMessage("log.config_loaded_info",
+                    "world", worldName, "rx", regionX, "ry", regionY, "rz", regionZ,
+                    "sx", startX, "sy", startY, "sz", startZ, "ex", endX, "ey", endY, "ez", endZ,
+                    "skip", skipUngeneratedChunks ? languageManager.getMessage("log.on")
+                            : languageManager.getMessage("log.off")));
+            getLogger().info(languageManager.getMessage("log.config_performance_info",
+                    "memory",
+                    memoryProtectionEnabled ? languageManager.getMessage("log.enabled")
+                            : languageManager.getMessage("log.disabled"),
+                    "batch", delayBetweenBatchesMs, "chunk", delayBetweenChunksMs, "gc", gcEveryChunks));
 
             return true;
         } catch (Exception e) {
@@ -354,7 +358,8 @@ public final class FAWEReplace extends JavaPlugin {
                 Material om = Material.getMaterial(originName.toUpperCase(Locale.ROOT));
                 Material tm = Material.getMaterial(targetName.toUpperCase(Locale.ROOT));
                 if (om == null || tm == null) {
-                    getLogger().warning("Invalid material: origin=" + originName + ", target=" + targetName);
+                    getLogger().warning(languageManager.getMessage("log.invalid_material_config", "origin", originName,
+                            "target", targetName));
                     continue;
                 }
 
@@ -401,7 +406,7 @@ public final class FAWEReplace extends JavaPlugin {
                     EntityType et = EntityType.valueOf(key);
                     types.add(et);
                 } catch (IllegalArgumentException ex) {
-                    getLogger().warning("Unknown entity type: " + s);
+                    getLogger().warning(languageManager.getMessage("log.unknown_entity_type", "type", s));
                 }
             }
         }

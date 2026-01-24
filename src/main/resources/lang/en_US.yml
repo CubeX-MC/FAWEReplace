@@ -28,6 +28,10 @@ help:
   removerule: "§e/{label} removerule <origin> §7- Remove replacement rule"
   rules: "§e/{label} rules §7- List current rules"
 
+  # Command Registration
+  description: "FAWE-based world cleaning and block replacement"
+  usage: "/<command> <start|stop|status|reload|help>"
+
 # Command Usage
 usage: "§eUsage: /{label} <start|stop|status|reload|help>"
 
@@ -166,7 +170,7 @@ plugin:
   config_invalid: "Configuration load failed! Please fix the configuration and use /fawereplace reload to reload."
   command_unavailable: "The start command will not be available until configuration is properly loaded."
   command_registered: "Successfully registered command '/fawereplace' (aliases: /fawerl, /frl)"
-  command_register_failed: "Error registering command:"
+  command_register_failed: "Error registering command: {error}"
 
 # Logger Messages (Hardcoded fix)
 log:
@@ -187,7 +191,28 @@ log:
   resume_world_mismatch: "Progress file world mismatch, ignored: {file}"
   resume_continued: "Resumed from progress file, continue at tile {current} / {total}."
   resume_delete_failed: "Failed to delete progress file: {file}"
+  rules_migrated: "Successfully migrated dynamic data (world, target, blocks) to rules.yml"
+  rules_migrated_note: "Note: The data in config.yml is still there but will be ignored for these fields."
+  language_loaded: "Loaded language: {language} ({count} messages)"
+  language_fallback: "Language file not found: {file}, falling back to zh_CN"
   bukkit_world_failed: "Failed to get Bukkit world, processing all regions (skipping generation check disabled)"
+  memory_recovered: "Memory recovered to safe level ({percent}% free)"
+  memory_warning: "Low memory warning! Free: {free}% (Min: {min}%) - Pausing {wait}s (Retry {retry}/{max})"
+  memory_abort_max_retries: "Memory consistently low, reached max retries ({count}). Aborting task to prevent crash."
+  gc_executed: "Processed {count} chunks, performing GC"
+  error_cleaning_te: "Exception while cleaning mismatched tile entities"
+  error_refreshing_heightmap: "Exception while refreshing chunk heightmaps"
+  rules_save_failed: "Could not save rules.yml!"
+  invalid_material_config: "Invalid material: origin={origin}, target={target}"
+  unknown_entity_type: "Unknown entity type: {type}"
+  language_load_failed: "Failed to load language file: {file}"
+  invalid_replacements: "Invalid replacements array for key: {key}"
+  config_loaded_info: "Config loaded: World={world}, Region={rx}x{ry}x{rz}, Range=({sx},{sy},{sz})->({ex},{ey},{ez}), SkipUngenerated={skip}"
+  config_performance_info: "Memory Protection: {memory} | Performance: BatchDelay={batch}ms, ChunkDelay={chunk}ms, GC Frequency={gc} chunks"
+  enabled: "Enabled"
+  disabled: "Disabled"
+  on: "On"
+  off: "Off"
 
 # Chunk Repair Strings
 repair:

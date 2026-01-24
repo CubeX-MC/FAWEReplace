@@ -10,7 +10,7 @@
 
 **FAWEReplace** 是一个面向大型 Minecraft 世界清理任务的高性能 Paper 插件，基于 FastAsyncWorldEdit (FAWE) 的异步能力实现高效的批量方块替换与实体移除。
 
-**版本**: 1.0.3  
+**版本**: 1.0.4  
 **支持**: Minecraft 1.20.2+, Paper/Spigot  
 **依赖**: FastAsyncWorldEdit (FAWE)
 
